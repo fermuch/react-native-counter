@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Text } from 'react-native';
-import eases from 'eases';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Text } from 'react-native'
+import eases from 'eases'
 
 export default class Counter extends Component {
   static propTypes = {
@@ -11,64 +11,70 @@ export default class Counter extends Component {
     time: PropTypes.number,
     easing: PropTypes.string,
     onComplete: PropTypes.func,
-    style: PropTypes.any,
-  };
+    style: PropTypes.any
+  }
 
   static defaultProps = {
     start: 0,
     digits: 0,
     time: 1000,
-    easing: 'linear',
-  };
+    easing: 'linear'
+  }
 
-  state = { value: this.props.start };
+  state = { value: this.props.start }
 
   componentDidMount() {
-    this.startTime = Date.now();
-    this.frameAnimationRequest = requestAnimationFrame(this.animate.bind(this));
+    this.resetAnimation()
   }
 
   componentWillUnmount() {
-    cancelAnimationFrame(this.frameAnimationRequest);
+    cancelAnimationFrame(this.frameAnimationRequest)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.end !== nextProps.end) {
-      cancelAnimationFrame(this.frameAnimationRequest);
-      this.frameAnimationRequest = requestAnimationFrame(this.animate.bind(this));
+  resetAnimation() {
+    if (this.frameAnimationRequest) {
+      cancelAnimationFrame(this.frameAnimationRequest)
+    }
+
+    this.stop = false
+    this.startTime = Date.now()
+    this.frameAnimationRequest = requestAnimationFrame(this.animate.bind(this))
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.end !== prevProps.end) {
+      this.resetAnimation()
     }
   }
 
   animate() {
-    const { onComplete } = this.props;
+    const { onComplete } = this.props
 
     if (this.stop) {
-      if (onComplete) onComplete();
-      return;
+      if (onComplete) onComplete()
+      return
     }
 
-    this.frameAnimationRequest = requestAnimationFrame(this.animate.bind(this));
-    this.draw();
+    this.frameAnimationRequest = requestAnimationFrame(this.animate.bind(this))
+    this.draw()
   }
 
   draw() {
-    const { time, start, end, easing } = this.props;
+    const { time, start, end, easing } = this.props
 
-    const now = Date.now();
-    if (now - this.startTime >= time) this.stop = true;
-    const percentage = Math.min((now - this.startTime) / time, 1);
-    const easeVal = eases[easing](percentage);
-    const value = start + (end - start) * easeVal;
+    const now = Date.now()
+    if (now - this.startTime >= time) this.stop = true
+    const percentage = Math.min((now - this.startTime) / time, 1)
+    const easeVal = eases[easing](percentage)
+    const value = start + (end - start) * easeVal
 
-    this.setState({ value });
+    this.setState({ value })
   }
 
   render() {
-    const { digits, style } = this.props;
-    const { value } = this.state;
+    const { digits, style } = this.props
+    const { value } = this.state
 
-    return (
-      <Text style={style}>{value.toFixed(digits)}</Text>
-    );
+    return <Text style={style}>{value.toFixed(digits)}</Text>
   }
 }
