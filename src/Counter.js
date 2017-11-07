@@ -25,7 +25,18 @@ export default class Counter extends Component {
 
   componentDidMount() {
     this.startTime = Date.now();
-    requestAnimationFrame(this.animate.bind(this));
+    this.frameAnimationRequest = requestAnimationFrame(this.animate.bind(this));
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.frameAnimationRequest);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.end !== nextProps.end) {
+      cancelAnimationFrame(this.frameAnimationRequest);
+      this.frameAnimationRequest = requestAnimationFrame(this.animate.bind(this));
+    }
   }
 
   animate() {
@@ -36,7 +47,7 @@ export default class Counter extends Component {
       return;
     }
 
-    requestAnimationFrame(this.animate.bind(this));
+    this.frameAnimationRequest = requestAnimationFrame(this.animate.bind(this));
     this.draw();
   }
 
