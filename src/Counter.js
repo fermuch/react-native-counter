@@ -11,6 +11,7 @@ export default class Counter extends Component {
     time: PropTypes.number,
     easing: PropTypes.string,
     onComplete: PropTypes.func,
+    showSign: PropTypes.bool,
     style: PropTypes.any
   }
 
@@ -74,7 +75,11 @@ export default class Counter extends Component {
   render() {
     const { digits, style } = this.props
     const { value } = this.state
+    let sign = '';
+    if (this.props.showSign) {
+      sign = value >= 0 ? '+' : '-';
+    }
 
-    return <Text style={style}>{value.toFixed(digits)}</Text>
+    return <Text style={style}>{sign}{value.toFixed(digits)}</Text>
   }
 }
